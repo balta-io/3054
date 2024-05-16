@@ -1,7 +1,8 @@
 using Dima.Api.Common.Api;
 using Dima.Api.Endpoints.Categories;
+using Dima.Api.Endpoints.Identity;
 using Dima.Api.Endpoints.Transactions;
-using Dima.Core.Models;
+using Dima.Api.Models;
 
 namespace Dima.Api.Endpoints;
 
@@ -12,23 +13,36 @@ public static class Endpoint
         var endpoints = app
             .MapGroup("");
 
+        endpoints.MapGroup("/")
+            .WithTags("Health Check")
+            .MapGet("/", () => new { message = "OK" });
+
         endpoints.MapGroup("v1/categories")
             .WithTags("Categories")
-            // .RequireAuthorization()
+            .RequireAuthorization()
             .MapEndpoint<CreateCategoryEndpoint>()
             .MapEndpoint<UpdateCategoryEndpoint>()
             .MapEndpoint<DeleteCategoryEndpoint>()
             .MapEndpoint<GetCategoryByIdEndpoint>()
             .MapEndpoint<GetAllCategoriesEndpoint>();
-        
+
         endpoints.MapGroup("v1/transactions")
             .WithTags("Transactions")
-            // .RequireAuthorization()
+            .RequireAuthorization()
             .MapEndpoint<CreateTransactionEndpoint>()
             .MapEndpoint<UpdateTransactionEndpoint>()
             .MapEndpoint<DeleteTransactionEndpoint>()
             .MapEndpoint<GetTransactionByIdEndpoint>()
             .MapEndpoint<GetTransactionsByPeriodEndpoint>();
+        
+        endpoints.MapGroup("v1/identity")
+            .WithTags("Identity")
+            .MapIdentityApi<User>();
+            
+        endpoints.MapGroup("v1/identity")
+            .WithTags("Identity")
+            .MapEndpoint<LogoutEndpoint>()
+            .MapEndpoint<GetRolesEndpoint>();
     }
 
     private static IEndpointRouteBuilder MapEndpoint<TEndpoint>(this IEndpointRouteBuilder app)

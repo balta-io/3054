@@ -1,40 +1,23 @@
-using Dima.Api.Data;
+using Dima.Api;
+using Dima.Api.Common.Api;
 using Dima.Api.Endpoints;
-using Dima.Api.Handlers;
-using Dima.Core.Handlers;
-using Dima.Core.Models;
-using Dima.Core.Requests.Categories;
-using Dima.Core.Responses;
-using Microsoft.EntityFrameworkCore;
+using Dima.Core;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var cnnStr = builder
-    .Configuration
-    .GetConnectionString("DefaultConnection") ?? string.Empty;
-
-builder
-    .Services
-    .AddDbContext<AppDbContext>(
-        x => { x.UseSqlServer(cnnStr); });
-
-builder
-    .Services
-    .AddTransient<ICategoryHandler, CategoryHandler>();
-
-builder
-    .Services
-    .AddTransient<ITransactionHandler, TransactionHandler>();
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(x => { x.CustomSchemaIds(n => n.FullName); });
+builder.AddConfiguration();
+builder.AddSecurity();
+builder.AddDataContexts();
+builder.AddCrossOrigin();
+builder.AddDocumentation();
+builder.AddServices();
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+    app.ConfigureDevEnvironment();
 
-app.MapGet("/", () => new { message = "OK" });
+app.UseCors(ApiConfiguration.CorsPolicyName);
+app.UseSecurity();
 app.MapEndpoints();
 
 app.Run();
