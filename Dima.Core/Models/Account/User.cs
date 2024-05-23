@@ -1,6 +1,6 @@
-namespace Dima.Web.Models.Identity;
+namespace Dima.Core.Models.Account;
 
-public class UserInfo
+public class User
 {
     public string Email { get; set; } = string.Empty;
     public bool IsEmailConfirmed { get; set; }

@@ -1,4 +1,4 @@
-namespace Dima.Web.Models.Identity;
+namespace Dima.Core.Models.Account;
 
 public class RoleClaim
 {

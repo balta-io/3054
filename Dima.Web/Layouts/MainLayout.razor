@@ -1,26 +1,51 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider 
+<MudThemeProvider
     @ref="_mudThemeProvider"
-    @bind-IsDarkMode="_isDarkMode" 
+    @bind-IsDarkMode="_isDarkMode"
     Theme="Configuration.Theme"/>
 <MudSnackbarProvider/>
+<MudDialogProvider/>
 
-<MudLayout>
-    <MudAppBar>
-        Dima
-        <MudSpacer />
-        <MudSwitch @bind-Value="@_isDarkMode" />
-    </MudAppBar>
-    <MudMainContent>
-        <MudContainer>
-            @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+<AuthorizeView>
+    <Authorized>
+        <MudLayout>
+            <MudAppBar>
+                <MudIconButton
+                    Icon="@Icons.Material.Filled.Menu"
+                    Color="Color.Inherit"
+                    Edge="Edge.Start"
+                    OnClick="ToggleDrawer"/>
+                Dima
+                <MudSpacer/>
+                <MudText Typo="Typo.caption">
+                    @context.User.Identity?.Name
+                </MudText>
+                <MudSwitch
+                    Color="Color.Inherit"
+                    @bind-Value="@_isDarkMode"
+                    T="bool"
+                    Class="ma-4"
+                    ThumbIcon="@Icons.TwoTone.Lightbulb"/>
+            </MudAppBar>
+            <MudDrawer @bind-Open="@_isDrawerOpened">
+                <NavMenu/>
+            </MudDrawer>
+            <MudMainContent>
+                <MudContainer Class="mt-4">
+                    @Body
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+    </Authorized>
+    <NotAuthorized>
+        <LoginRedirect/>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
 
+    private bool _isDrawerOpened = true;
     private bool _isDarkMode = true;
     private MudThemeProvider _mudThemeProvider = null!;
 
@@ -40,4 +65,8 @@
         StateHasChanged();
         return Task.CompletedTask;
     }
+
+    private void ToggleDrawer()
+        => _isDrawerOpened = !_isDrawerOpened;
+
 }

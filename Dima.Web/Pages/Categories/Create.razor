@@ -1,0 +1,26 @@
+@page "/categorias/adicionar"
+@inherits CreateCategoryPage
+
+<MudText Typo="Typo.h3">Nova Categoria</MudText>
+<MudPaper Class="pa-8 mt-4">
+    <EditForm Model="@InputModel" OnValidSubmit="OnValidSubmitAsync">
+        <DataAnnotationsValidator/>
+
+        <MudTextField Label="Título"
+                      HelperText="Campo obrigatório"
+                      @bind-Value="InputModel.Title"
+                      For="@(() => InputModel.Title)"/>
+
+        <MudTextField Label="Descição"
+                      Lines="5"
+                      HelperText="Campo obrigatório"
+                      @bind-Value="InputModel.Description"
+                      For="@(() => InputModel.Description)"/>
+
+        <MudButton ButtonType="ButtonType.Submit"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Salvar
+        </MudButton>
+    </EditForm>
+</MudPaper>
