@@ -1,5 +1,6 @@
 using Dima.Api.Data;
 using Dima.Core.Common.Extensions;
+using Dima.Core.Enums;
 using Dima.Core.Handlers;
 using Dima.Core.Models;
 using Dima.Core.Requests.Transactions;
@@ -13,6 +14,9 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
 {
     public async Task<Response<Transaction?>> CreateAsync(CreateTransactionRequest request)
     {
+        if (request is { Type: ETransactionType.Withdraw, Amount: >= 0 }) 
+            request.Amount *= -1;
+
         try
         {
             var transaction = new Transaction
@@ -39,6 +43,9 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
 
     public async Task<Response<Transaction?>> UpdateAsync(UpdateTransactionRequest request)
     {
+        if (request is { Type: ETransactionType.Withdraw, Amount: >= 0 }) 
+            request.Amount *= -1;
+        
         try
         {
             var transaction = await context
@@ -124,10 +131,10 @@ public class TransactionHandler(AppDbContext context) : ITransactionHandler
                 .Transactions
                 .AsNoTracking()
                 .Where(x =>
-                    x.CreatedAt >= request.StartDate &&
-                    x.CreatedAt <= request.EndDate &&
+                    x.PaidOrReceivedAt >= request.StartDate &&
+                    x.PaidOrReceivedAt <= request.EndDate &&
                     x.UserId == request.UserId)
-                .OrderBy(x => x.CreatedAt);
+                .OrderBy(x => x.PaidOrReceivedAt);
 
             var transactions = await query
                 .Skip((request.PageNumber - 1) * request.PageSize)
