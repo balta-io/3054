@@ -1,7 +1,91 @@
 ﻿@page "/"
+@inherits HomePage
 
-<PageTitle>Home</PageTitle>
+<MudGrid Justify="Justify.Center">
+    <MudItem lg="6" md="12" sm="12" xs="12">
+        <MudCard Class="pa-8">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Resumo Financeiro</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton
+                        Icon="@(ShowValues ? Icons.TwoTone.VisibilityOff : Icons.TwoTone.Visibility)"
+                        OnClick="ToggleShowValues"/>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <p>
+                    <strong>SALDO</strong>
+                </p>
+                @if (Summary is null)
+                {
+                    <div class="d-flex justify-center align-center" style="height: 350px">
+                        <MudProgressCircular Indeterminate="true" Color="Color.Primary"/>
+                    </div>
+                }
+                else
+                {
+                    @if (Summary.Total > 0)
+                    {
+                        <MudText Color="Color.Success" Typo="Typo.h3">
+                            @(ShowValues ? Summary.Total.ToString("C") : "R$ ********")
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText Color="Color.Error" Typo="Typo.h3">
+                            @(ShowValues ? Summary.Total.ToString("C") : "R$ ********")
+                        </MudText>
+                    }
 
-<h1>Hello, world!</h1>
+                    <br/>
+                    <p>
+                        <strong>Entradas</strong>
+                    </p>
+                    <MudText Color="Color.Success">
+                        @(ShowValues ? Summary.Incomes.ToString("C") : "R$ ********")
+                    </MudText>
 
-Welcome to your new app.
+                    <br/>
+                    <p>
+                        <strong>Saídas</strong>
+                    </p>
+                    <MudText Color="Color.Error">
+                        @(ShowValues ? Summary.Expenses.ToString("C") : "R$ ********")
+                    </MudText>
+                }
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem lg="6" md="12" sm="12" xs="12">
+        <MudCard Class="pa-8">
+            <MudCardHeader>
+                <MudText Typo="Typo.h6">Receitas e Despesas</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <IncomesAndExpensesChart/>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem lg="6" md="12" sm="12" xs="12">
+        <MudCard Class="pa-8">
+            <MudCardHeader>
+                <MudText Typo="Typo.h6">Entradas por Categoria</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <IncomesByCategoryChart/>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem lg="6" md="12" sm="12" xs="12">
+        <MudCard Class="pa-8">
+            <MudCardHeader>
+                <MudText Typo="Typo.h6">Despesas por Categoria</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                <ExpensesByCategoryChart/>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
