@@ -75,5 +75,9 @@ public static class BuilderExtension
         builder
             .Services
             .AddTransient<ITransactionHandler, TransactionHandler>();
+
+        builder
+            .Services
+            .AddTransient<IReportHandler, ReportHandler>();
     }
 }
