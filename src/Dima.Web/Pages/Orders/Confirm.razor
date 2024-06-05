@@ -1,0 +1,36 @@
+@page "/pedidos/{number}/confirmar"
+@using Dima.Core.Handlers
+@using Dima.Core.Requests.Orders
+@inject IOrderHandler service
+
+@if (Success is true)
+{
+    <MudText Typo="Typo.h3">Parabéns! Agora você é Premium!</MudText>
+}
+else
+{
+    <MudText Typo="Typo.h3"Color="Color.Error">
+        Não foi possível confirmar seu pedido
+    </MudText>
+}
+
+@code {
+
+    [Parameter]
+    public string Number { get; set; } = string.Empty;
+
+    public bool? Success { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await service.ConfirmOrderAsync(
+            new ConfirmOrderRequest
+            {
+                Number = Number
+            });
+
+        Success = result.IsSuccess;
+        StateHasChanged();
+    }
+
+}

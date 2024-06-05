@@ -35,7 +35,7 @@ public class StripeHandler : IStripeHandler
                             Name = "Premium Anual",
                             Description = "Plano para um ano de acesso"
                         },
-                        UnitAmountDecimal = 79990,
+                        UnitAmountDecimal = Configuration.PremiumPrice,
                     },
                     Quantity = 1
                 }

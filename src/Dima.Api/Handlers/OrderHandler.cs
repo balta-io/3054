@@ -83,7 +83,7 @@ public class OrderHandler(
         if (user is null)
             return new Response<Order?>(null, 500, "Perfil não encontrado");
 
-        var addRoleResult = await userManager.AddToRoleAsync(user, "premium");
+        var addRoleResult = await userManager.AddToRoleAsync(user, "Premium");
         if (addRoleResult.Succeeded == false)
             return new Response<Order?>(null, 500, "Não foi possível atribuir o perfil ao usuário");
 

@@ -1,0 +1,17 @@
+@page "/premium"
+
+<MudText Typo="Typo.h6">Premium</MudText>
+<p>Descubra as vantagens do Premium</p>
+<ul>
+    <li>- Vantagem 1</li>
+    <li>- Vantagem 2</li>
+    <li>- Vantagem 3</li>
+    <li>- Vantagem 4</li>
+    <li>- Vantagem 5</li>
+</ul>
+<br>
+<MudText Typo="Typo.h2">
+    @((Core.Configuration.PremiumPrice/100).ToString("C"))
+</MudText>
+<br>
+<CheckoutButton />

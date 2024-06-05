@@ -1,0 +1,12 @@
+@inherits CheckoutButtonComponent
+
+@if (IsBusy)
+{
+    <MudProgressCircular Indeterminate="true"Color="Color.Primary"/>
+}
+else
+{
+    <MudButton Variant="Variant.Filled" Color="Color.Success" @onclick="OnValidSubmitAsync">
+        Pagar com Stripe
+    </MudButton>
+}
