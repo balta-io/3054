@@ -23,6 +23,8 @@
     <ItemGroup>
         <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
         <_ContentIncludedByDefault Remove="Components\Reports\ExpensesByCategoryChart.razor" />
+        <_ContentIncludedByDefault Remove="Pages\Orders\Checkout.razor" />
+        <_ContentIncludedByDefault Remove="Pages\Orders\Confirm.razor" />
     </ItemGroup>
 
     <ItemGroup>

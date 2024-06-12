@@ -1,9 +1,7 @@
 using Dima.Api.Common.Api;
 using Dima.Api.Endpoints.Categories;
 using Dima.Api.Endpoints.Identity;
-using Dima.Api.Endpoints.Orders;
 using Dima.Api.Endpoints.Reports;
-using Dima.Api.Endpoints.Stripe;
 using Dima.Api.Endpoints.Transactions;
 using Dima.Api.Models;
 
@@ -54,17 +52,6 @@ public static class Endpoint
             .MapEndpoint<GetIncomesByCategoryEndpoint>()
             .MapEndpoint<GetExpensesByCategoryEndpoint>()
             .MapEndpoint<GetFinancialSummaryEndpoint>();
-
-        endpoints.MapGroup("v1/orders")
-            .WithTags("Orders")
-            .RequireAuthorization()
-            .MapEndpoint<CreateOrderEndpoint>()
-            .MapEndpoint<ConfirmOrderEndpoint>();
-
-        endpoints.MapGroup("v1/payments/stripe")
-            .WithTags("Payments - Stripe")
-            .RequireAuthorization()
-            .MapEndpoint<CreateSessionEndpoint>();
     }
 
     private static IEndpointRouteBuilder MapEndpoint<TEndpoint>(this IEndpointRouteBuilder app)

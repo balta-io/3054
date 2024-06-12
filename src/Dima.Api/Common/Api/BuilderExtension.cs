@@ -83,13 +83,5 @@ public static class BuilderExtension
         builder
             .Services
             .AddTransient<IReportHandler, ReportHandler>();
-        
-        builder
-            .Services
-            .AddTransient<IOrderHandler, OrderHandler>();
-        
-        builder
-            .Services
-            .AddTransient<IStripeHandler, StripeHandler>();
     }
 }
