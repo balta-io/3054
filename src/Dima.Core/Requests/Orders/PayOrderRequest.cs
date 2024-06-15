@@ -2,6 +2,6 @@
 
 public class PayOrderRequest : Request
 {
-    public long OrderId { get; set; }
+    public long Id { get; set; }
     public string ExternalReference { get; set; } = string.Empty;
 }

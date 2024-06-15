@@ -2,5 +2,5 @@
 
 public class RefundOrderRequest : Request
 {
-    public long OrderId { get; set; }
+    public long Id { get; set; }
 }
