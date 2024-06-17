@@ -4,6 +4,7 @@ using Dima.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dima.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240617202039_stripe")]
+    partial class stripe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,35 +168,6 @@ namespace Dima.Api.Migrations
                     b.HasIndex("VoucherId");
 
                     b.ToTable("Order", (string)null);
-                });
-
-            modelBuilder.Entity("Dima.Core.Models.Premium", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("EndedAt")
-                        .HasColumnType("DATETIME2");
-
-                    b.Property<long>("OrderId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("StartedAt")
-                        .HasColumnType("DATETIME2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(160)
-                        .HasColumnType("VARCHAR");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("Premium", (string)null);
                 });
 
             modelBuilder.Entity("Dima.Core.Models.Product", b =>
@@ -519,17 +493,6 @@ namespace Dima.Api.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Voucher");
-                });
-
-            modelBuilder.Entity("Dima.Core.Models.Premium", b =>
-                {
-                    b.HasOne("Dima.Core.Models.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Dima.Core.Models.Transaction", b =>
