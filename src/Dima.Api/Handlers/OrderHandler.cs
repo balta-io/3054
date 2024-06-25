@@ -12,12 +12,20 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
 {
     public async Task<Response<Order?>> CancelAsync(CancelOrderRequest request)
     {
-        var order = await context
-            .Orders
-            .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
+        Order? order;
+        try
+        {
+            order = await context
+                .Orders
+                .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
 
-        if (order is null)
-            return new Response<Order?>(null, 404, "Pedido não encontrado");
+            if (order is null)
+                return new Response<Order?>(null, 404, "Pedido não encontrado");
+        }
+        catch
+        {
+            return new Response<Order?>(null, 500, "Falha ao obter pedido");
+        }
 
         switch (order.Status)
         {
@@ -30,37 +38,62 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
             case EOrderStatus.Refunded:
                 return new Response<Order?>(order, 400, "Um pedido reembolsado não pode ser cancelado");
 
-            case EOrderStatus.WaitingPayment: break;
+            case EOrderStatus.WaitingPayment:
+                break;
+
+            default:
+                return new Response<Order?>(order, 400, "Pedido com situação inválida!");
         }
 
         order.Status = EOrderStatus.Canceled;
         order.UpdatedAt = DateTime.Now;
 
-        context.Orders.Update(order);
-        await context.SaveChangesAsync();
+        try
+        {
+            context.Orders.Update(order);
+            await context.SaveChangesAsync();
+        }
+        catch
+        {
+            return new Response<Order?>(order, 500, "Não foi possível atualizar seu pedido");
+        }
 
         return new Response<Order?>(order, 200, $"Pedido {order.Number} atualizado!");
     }
 
     public async Task<Response<Order?>> CreateAsync(CreateOrderRequest request)
     {
-        var productExists = await context
-            .Products
-            .AsNoTracking()
-            .AnyAsync(x => x.Id == request.ProductId && x.IsActive == true);
-
-        if (productExists is false)
-            return new Response<Order?>(null, 404, "Produto não encontrado ou inativo");
-
-        if (request.VoucherId is not null)
+        try
         {
-            var voucherExists = await context
-                .Vouchers
+            var productExists = await context
+                .Products
                 .AsNoTracking()
-                .AnyAsync(x => x.Id == request.VoucherId && x.IsActive == true);
+                .AnyAsync(x => x.Id == request.ProductId && x.IsActive == true);
 
-            if (voucherExists is false)
-                return new Response<Order?>(null, 404, "Voucher não encontrado ou inativo");
+            if (productExists is false)
+                return new Response<Order?>(null, 404, "Produto não encontrado ou inativo");
+        }
+        catch
+        {
+            return new Response<Order?>(null, 500, "Falha ao verificar produto");
+        }
+
+        try
+        {
+            if (request.VoucherId is not null)
+            {
+                var voucherExists = await context
+                    .Vouchers
+                    .AsNoTracking()
+                    .AnyAsync(x => x.Id == request.VoucherId && x.IsActive == true);
+
+                if (voucherExists is false)
+                    return new Response<Order?>(null, 404, "Voucher não encontrado ou inativo");
+            }
+        }
+        catch
+        {
+            return new Response<Order?>(null, 500, "Falha ao verificar voucher");
         }
 
         var order = new Order
@@ -70,20 +103,35 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
             VoucherId = request.VoucherId
         };
 
-        await context.Orders.AddAsync(order);
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.Orders.AddAsync(order);
+            await context.SaveChangesAsync();
+        }
+        catch
+        {
+            return new Response<Order?>(null, 500, "Não foi possível registrar seu pedido");
+        }
 
         return new Response<Order?>(order, 201, $"Pedido {order.Number} cadastrado com sucesso!");
     }
 
     public async Task<Response<Order?>> PayAsync(PayOrderRequest request)
     {
-        var order = await context
-            .Orders
-            .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
+        Order? order;
+        try
+        {
+            order = await context
+                .Orders
+                .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
 
-        if (order is null)
-            return new Response<Order?>(null, 404, "Pedido não encontrado");
+            if (order is null)
+                return new Response<Order?>(null, 404, "Pedido não encontrado");
+        }
+        catch
+        {
+            return new Response<Order?>(null, 500, "Falha ao consultar pedido");
+        }
 
         switch (order.Status)
         {
@@ -96,27 +144,46 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
             case EOrderStatus.Refunded:
                 return new Response<Order?>(order, 400, "Um pedido reembolsado não pode ser cancelado");
 
-            case EOrderStatus.WaitingPayment: break;
+            case EOrderStatus.WaitingPayment:
+                break;
+
+            default:
+                return new Response<Order?>(order, 400, "Situação do pedido inválida");
         }
 
         order.Status = EOrderStatus.Paid;
         order.ExternalReference = request.ExternalReference;
         order.UpdatedAt = DateTime.Now;
 
-        context.Orders.Update(order);
-        await context.SaveChangesAsync();
+        try
+        {
+            context.Orders.Update(order);
+            await context.SaveChangesAsync();
+        }
+        catch
+        {
+            return new Response<Order?>(order, 500, "Não foi possível realizar o pagamento do seu pedido!");
+        }
 
         return new Response<Order?>(order, 200, $"Pedido {order.Number} pago com sucesso!");
     }
 
     public async Task<Response<Order?>> RefundAsync(RefundOrderRequest request)
     {
-        var order = await context
-            .Orders
-            .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
+        Order? order;
+        try
+        {
+            order = await context
+                .Orders
+                .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
 
-        if (order is null)
-            return new Response<Order?>(null, 404, "Pedido não encontrado");
+            if (order is null)
+                return new Response<Order?>(null, 404, "Pedido não encontrado");
+        }
+        catch
+        {
+            return new Response<Order?>(null, 500, "Falha ao consultar seu pedido");
+        }
 
         switch (order.Status)
         {
@@ -129,14 +196,25 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
             case EOrderStatus.Refunded:
                 return new Response<Order?>(order, 400, "O pedido já foi reembolsado");
 
-            case EOrderStatus.Paid: break;
+            case EOrderStatus.Paid:
+                break;
+
+            default:
+                return new Response<Order?>(order, 400, "Situação do pedido inválida");
         }
 
         order.Status = EOrderStatus.Refunded;
         order.UpdatedAt = DateTime.Now;
 
-        context.Orders.Update(order);
-        await context.SaveChangesAsync();
+        try
+        {
+            context.Orders.Update(order);
+            await context.SaveChangesAsync();
+        }
+        catch
+        {
+            return new Response<Order?>(order, 500, "Não foi possível reembolsar seu pedido");
+        }
 
         return new Response<Order?>(order, 200, $"Pedido {order.Number} estornado com sucesso!");
     }
