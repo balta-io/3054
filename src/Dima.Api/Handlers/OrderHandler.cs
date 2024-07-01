@@ -17,6 +17,7 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
         {
             order = await context
                 .Orders
+                .Include(x => x.Product)
                 .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
 
             if (order is null)
@@ -63,32 +64,44 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
 
     public async Task<Response<Order?>> CreateAsync(CreateOrderRequest request)
     {
+        Product? product;
         try
         {
-            var productExists = await context
+            product = await context
                 .Products
                 .AsNoTracking()
-                .AnyAsync(x => x.Id == request.ProductId && x.IsActive == true);
+                .FirstOrDefaultAsync(x => x.Id == request.ProductId && x.IsActive == true);
 
-            if (productExists is false)
+            if (product is null)
                 return new Response<Order?>(null, 404, "Produto não encontrado ou inativo");
+
+            context.Attach(product);
         }
         catch
         {
             return new Response<Order?>(null, 500, "Falha ao verificar produto");
         }
 
+        Voucher? voucher = null;
         try
         {
             if (request.VoucherId is not null)
             {
-                var voucherExists = await context
+                voucher = await context
                     .Vouchers
                     .AsNoTracking()
-                    .AnyAsync(x => x.Id == request.VoucherId && x.IsActive == true);
+                    .FirstOrDefaultAsync(x => x.Id == request.VoucherId && x.IsActive == true);
 
-                if (voucherExists is false)
+                if (voucher is null)
                     return new Response<Order?>(null, 404, "Voucher não encontrado ou inativo");
+
+                if (voucher.IsActive == false)
+                    return new Response<Order?>(null, 404, "Este voucher já foi utilizado");
+
+                voucher.IsActive = false;
+
+                // context.Attach(voucher);
+                context.Vouchers.Update(voucher);
             }
         }
         catch
@@ -99,7 +112,9 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
         var order = new Order
         {
             UserId = request.UserId,
+            Product = product,
             ProductId = request.ProductId,
+            Voucher = voucher,
             VoucherId = request.VoucherId
         };
 
@@ -123,6 +138,7 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
         {
             order = await context
                 .Orders
+                .Include(x => x.Product)
                 .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
 
             if (order is null)
@@ -175,6 +191,7 @@ public class OrderHandler(AppDbContext context) : IOrderHandler
         {
             order = await context
                 .Orders
+                .Include(x => x.Product)
                 .FirstOrDefaultAsync(x => x.Id == request.Id && x.UserId == request.UserId);
 
             if (order is null)

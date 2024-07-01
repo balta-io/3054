@@ -48,6 +48,12 @@ public static class Endpoint
             .RequireAuthorization()
             .MapEndpoint<GetVoucherByNumberEndpoint>();
 
+        endpoints.MapGroup("v1/orders")
+            .WithTags("Orders")
+            .RequireAuthorization()
+            .MapEndpoint<CreateOrderEndpoint>()
+            .MapEndpoint<CancelOrderEndpoint>();
+
         endpoints.MapGroup("v1/identity")
             .WithTags("Identity")
             .MapIdentityApi<User>();
