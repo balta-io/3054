@@ -13,17 +13,17 @@ public static class Configuration
     {
         Typography = new Typography
         {
-            Default = new Default
+            Default = new DefaultTypography()
             {
                 FontFamily = ["Raleway", "sans-serif"]
             }
         },
-        Palette = new PaletteLight
+        PaletteLight = new PaletteLight
         {
             Primary = new MudColor("#1EFA2D"),
             PrimaryContrastText = new MudColor("#000000"),
             Secondary = Colors.LightGreen.Darken3,
-            Background = Colors.Grey.Lighten4,
+            Background = Colors.Gray.Lighten4,
             AppbarBackground = new MudColor("#1EFA2D"),
             AppbarText = Colors.Shades.Black,
             TextPrimary = Colors.Shades.Black,

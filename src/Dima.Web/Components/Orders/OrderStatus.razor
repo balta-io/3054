@@ -3,22 +3,22 @@
 @switch (Status)
 {
     case EOrderStatus.Canceled:
-        <MudChip Color="Color.Error">CANCELADO</MudChip>
+        <MudChip T="String" Color="Color.Error">CANCELADO</MudChip>
         break;
 
     case EOrderStatus.Paid:
-        <MudChip Color="Color.Success">PAGO</MudChip>
+        <MudChip T="String" Color="Color.Success">PAGO</MudChip>
         break;
 
     case EOrderStatus.Refunded:
-        <MudChip Color="Color.Info">ESTORNADO</MudChip>
+        <MudChip T="String" Color="Color.Info">ESTORNADO</MudChip>
         break;
 
     case EOrderStatus.WaitingPayment:
-        <MudChip Color="Color.Warning">AGUARDANDO PAGAMENTO</MudChip>
+        <MudChip T="String" Color="Color.Warning">AGUARDANDO PAGAMENTO</MudChip>
         break;
 
     default:
-        <MudChip Color="Color.Info">Indefinido</MudChip>
+        <MudChip T="String" Color="Color.Info">Indefinido</MudChip>
         break;
 }
